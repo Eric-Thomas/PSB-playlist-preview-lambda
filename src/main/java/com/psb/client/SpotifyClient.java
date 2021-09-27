@@ -1,7 +1,6 @@
 package com.psb.client;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.psb.exception.SpotifyClientException;
 import com.psb.exception.SpotifyClientUnauthorizedException;
 import com.psb.model.PlaylistsPreview;
-import com.psb.model.SpotifyPlaylist;
 
 import reactor.core.publisher.Mono;
 

@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.psb.constants.Constants;
+import com.psb.model.PlaylistsPreview;
 import com.psb.model.SpotifyImage;
 import com.psb.model.SpotifyPlaylist;
-import com.psb.model.SpotifyPlaylists;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -29,28 +29,29 @@ public class SpotifyUtil {
 	public void setMockServerUrl(String url) {
 		this.mockServerUrl = url;
 	}
-
-	public List<SpotifyPlaylists> createTestPlaylistsWithPagination() {
-		List<SpotifyPlaylists> testPlaylistsList = new ArrayList<>();
-		for (int i = 0; i < PAGINATION_COUNT; i++) {
-			SpotifyPlaylists testPlaylists = new SpotifyPlaylists();
-			List<SpotifyPlaylist> playlists = new ArrayList<>();
-			playlists.add(createTestPlaylist());
-			testPlaylists.setPlaylists(playlists);
-			testPlaylists.setNext(mockServerUrl + Constants.NEXT_URL);
-			testPlaylistsList.add(testPlaylists);
-		}
-		// Set last playlists next field to null to avoid infinite loop
-		testPlaylistsList.get(testPlaylistsList.size() - 1).setNext(null);
-		return testPlaylistsList;
-	}
-
-	public SpotifyPlaylists createTestPlaylists() {
-		SpotifyPlaylists testPlaylists = new SpotifyPlaylists();
+	
+	public PlaylistsPreview createTestPlaylistsPreview() {
+		PlaylistsPreview playlistsPreview = new PlaylistsPreview();
 		List<SpotifyPlaylist> playlists = new ArrayList<>();
 		playlists.add(createTestPlaylist());
-		testPlaylists.setPlaylists(playlists);
-		return testPlaylists;
+		playlistsPreview.setPlaylists(playlists);
+		playlistsPreview.setNext(null);
+		return playlistsPreview;
+	}
+
+	public List<PlaylistsPreview> createTestPlaylistsPreviewWithPagination() {
+		List<PlaylistsPreview> previews = new ArrayList<>();
+		for (int i = 0; i < PAGINATION_COUNT; i++) {
+			PlaylistsPreview playlistsPreview = new PlaylistsPreview();
+			List<SpotifyPlaylist> playlists = new ArrayList<>();
+			playlists.add(createTestPlaylist());
+			playlistsPreview.setPlaylists(playlists);
+			playlistsPreview.setNext(mockServerUrl + Constants.NEXT_URL);
+			previews.add(playlistsPreview);
+		}
+		// Set last 'next' field to null to avoid infinite loop
+		previews.get(previews.size() - 1).setNext(null);
+		return previews;
 	}
 
 	public SpotifyPlaylist createTestPlaylist() {
@@ -71,9 +72,9 @@ public class SpotifyUtil {
 		return image;
 	}
 
-	public void addMockPlaylistsResponse(SpotifyPlaylists playlists, MockWebServer server) {
+	public void addMockPlaylistsPreviewResponse(PlaylistsPreview preview, MockWebServer server) {
 		try {
-			server.enqueue(new MockResponse().setBody(this.objectMapper.writeValueAsString(playlists))
+			server.enqueue(new MockResponse().setBody(this.objectMapper.writeValueAsString(preview))
 					.addHeader("Content-Type", "application/json"));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -88,10 +89,10 @@ public class SpotifyUtil {
 		server.enqueue(new MockResponse().setResponseCode(503));
 	}
 
-	public void addMockPlaylistsPaginationResponses(List<SpotifyPlaylists> playlistsList, MockWebServer server) {
-		for (SpotifyPlaylists playlists : playlistsList) {
+	public void addMockPlaylistsPreviewPaginationResponses(List<PlaylistsPreview> playlistsPreviews, MockWebServer server) {
+		for (PlaylistsPreview preview : playlistsPreviews) {
 			try {
-				server.enqueue(new MockResponse().setBody(this.objectMapper.writeValueAsString(playlists))
+				server.enqueue(new MockResponse().setBody(this.objectMapper.writeValueAsString(preview))
 						.addHeader("Content-Type", "application/json"));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
@@ -99,8 +100,15 @@ public class SpotifyUtil {
 		}
 	}
 
-	public void addEmptyBodyResponse(MockWebServer server) {
-		server.enqueue(new MockResponse().addHeader("Content-Type", "application/json"));
+	public void addEmptyPlaylistsResponse(MockWebServer server) {
+		PlaylistsPreview preview = new PlaylistsPreview();
+		preview.setNext(null);
+		preview.setPlaylists(new ArrayList<>());
+		try {
+			server.enqueue(new MockResponse().setBody(this.objectMapper.writeValueAsString(preview)).addHeader("Content-Type", "application/json"));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

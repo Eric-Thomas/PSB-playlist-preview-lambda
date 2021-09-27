@@ -17,8 +17,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.psb.exception.SpotifyClientException;
 import com.psb.exception.SpotifyClientUnauthorizedException;
+import com.psb.model.PlaylistsPreview;
 import com.psb.model.SpotifyPlaylist;
-import com.psb.model.SpotifyPlaylists;
 import com.psb.testUtils.SpotifyUtil;
 
 import okhttp3.mockwebserver.MockWebServer;
@@ -53,45 +53,45 @@ class SpotifyClientTest {
 	}
 
 	@Test
-	void testGetPlaylistsNoPagination() throws SpotifyClientException, SpotifyClientUnauthorizedException {
-		SpotifyPlaylists testPlaylists = spotifyUtil.createTestPlaylists();
-		spotifyUtil.addMockPlaylistsResponse(testPlaylists, mockSpotifyServer);
-		SpotifyPlaylists clientPlaylists = spotifyClient.getPlaylists("oauthToken");
-		assertEquals(testPlaylists, clientPlaylists);
+	void testGetPlaylistsPreviewNoPagination() throws SpotifyClientException, SpotifyClientUnauthorizedException {
+		PlaylistsPreview testPlaylistsPreview = spotifyUtil.createTestPlaylistsPreview();
+		spotifyUtil.addMockPlaylistsPreviewResponse(testPlaylistsPreview, mockSpotifyServer);
+		PlaylistsPreview clientPlaylists = spotifyClient.getPlaylistsPreview("oauthToken");
+		assertEquals(testPlaylistsPreview, clientPlaylists);
 	}
 
 	@Test
 	void testGetPlaylistsWithPagination() throws SpotifyClientException, SpotifyClientUnauthorizedException {
-		List<SpotifyPlaylists> testPlaylistsList = spotifyUtil.createTestPlaylistsWithPagination();
-		SpotifyPlaylists testPlaylists = combinePlaylistsList(testPlaylistsList);
-		spotifyUtil.addMockPlaylistsPaginationResponses(testPlaylistsList, mockSpotifyServer);
-		SpotifyPlaylists clientPlaylists = spotifyClient.getPlaylists("oauthToken");
-		assertEquals(testPlaylists, clientPlaylists);
-		assertEquals(testPlaylists.getPlaylists().size(), clientPlaylists.getPlaylists().size());
+		List<PlaylistsPreview> paginationResp = spotifyUtil.createTestPlaylistsPreviewWithPagination();
+		spotifyUtil.addMockPlaylistsPreviewPaginationResponses(paginationResp, mockSpotifyServer);
+		PlaylistsPreview testPreview = combinePreviews(paginationResp);
+		PlaylistsPreview clientPreview = spotifyClient.getPlaylistsPreview("oauthToken");
+		assertEquals(testPreview, clientPreview);
+		assertEquals(testPreview.getPlaylists().size(), clientPreview.getPlaylists().size());
 	}
 
-	private SpotifyPlaylists combinePlaylistsList(List<SpotifyPlaylists> list) {
-		SpotifyPlaylists spotifyPlaylists = new SpotifyPlaylists();
-		List<SpotifyPlaylist> playlistList = new ArrayList<>();
-		for (SpotifyPlaylists playlists : list) {
-			playlistList.addAll(playlists.getPlaylists());
+	private PlaylistsPreview combinePreviews(List<PlaylistsPreview> previewsList) {
+		PlaylistsPreview previews = new PlaylistsPreview();
+		List<SpotifyPlaylist> playlists = new ArrayList<>();
+		for (PlaylistsPreview preview : previewsList) {
+			playlists.addAll(preview.getPlaylists());
 		}
-		spotifyPlaylists.setPlaylists(playlistList);
-		return spotifyPlaylists;
+		previews.setPlaylists(playlists);
+		return previews;
 	}
 
 	@Test
-	void testGetPlaylistsNull() throws SpotifyClientException, SpotifyClientUnauthorizedException {
-		spotifyUtil.addEmptyBodyResponse(mockSpotifyServer);
-		SpotifyPlaylists clientPlaylists = spotifyClient.getPlaylists("oauthToken");
-		assertTrue(clientPlaylists.getPlaylists().isEmpty());
+	void testGetPlaylistsPreviewNull() throws SpotifyClientException, SpotifyClientUnauthorizedException {
+		spotifyUtil.addEmptyPlaylistsResponse(mockSpotifyServer);
+		PlaylistsPreview clientPlaylistsPreview = spotifyClient.getPlaylistsPreview("oauthToken");
+		assertTrue(clientPlaylistsPreview.getPlaylists().isEmpty());
 	}
 
 	@Test
 	void testGetPlaylistsUnauthorized() {
 		spotifyUtil.addUnauthorizedResponse(mockSpotifyServer);
 		assertThrows(SpotifyClientUnauthorizedException.class, () -> {
-			spotifyClient.getPlaylists("oauthToken");
+			spotifyClient.getPlaylistsPreview("oauthToken");
 		});
 	}
 
@@ -99,7 +99,7 @@ class SpotifyClientTest {
 	void testGetPlaylists5xxError() {
 		spotifyUtil.add5xxResponse(mockSpotifyServer);
 		assertThrows(SpotifyClientException.class, () -> {
-			spotifyClient.getPlaylists("oauthToken");
+			spotifyClient.getPlaylistsPreview("oauthToken");
 		});
 	}
 
