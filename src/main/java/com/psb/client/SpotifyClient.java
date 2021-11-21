@@ -61,7 +61,6 @@ public class SpotifyClient {
 							return Mono.error(new SpotifyClientException(response.statusCode().toString()));
 						}
 					}).bodyToMono(PlaylistsPreview.class).block();
-			logger.info("preview {}", preview);
 			playlistsPreview.getPlaylists().addAll(preview.getPlaylists());
 			playlistsUrl = preview.getNext();
 		}
