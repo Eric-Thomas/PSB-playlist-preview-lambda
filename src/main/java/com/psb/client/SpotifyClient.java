@@ -22,9 +22,6 @@ public class SpotifyClient {
 	@Value("${spotify.playlists.uri}")
 	private String basePlaylistsUrl;
 
-	@Value("${spotify.user.profile.uri}")
-	private String userInfoUrl;
-
 	private WebClient client;
 
 	private Logger logger = LoggerFactory.getLogger(SpotifyClient.class);

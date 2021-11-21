@@ -17,9 +17,6 @@ public class SpringConfig {
 	@Value("${spotify.base.url}")
 	private String spotifyBaseUrl;
 
-	@Value("${runtime.env}")
-	private String environment;
-
 	@Bean
 	public WebClient getWebClientBuilder() {
 		return WebClient.builder()
