@@ -33,8 +33,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	}
 	
 	@ExceptionHandler(value = { SpotifyClientException.class })
-	public ResponseEntity<Object> handleClientException(SpotifyClientUnauthorizedException e) {
-		ExceptionResponse res = new ExceptionResponse(e.getMessage(), HttpStatus.UNAUTHORIZED);
+	public ResponseEntity<Object> handleClientException(SpotifyClientException e) {
+		ExceptionResponse res = new ExceptionResponse(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
 		return new ResponseEntity<>(res, HttpStatus.SERVICE_UNAVAILABLE);
 	}
 }
