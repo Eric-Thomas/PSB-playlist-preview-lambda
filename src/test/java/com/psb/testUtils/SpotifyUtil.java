@@ -61,6 +61,7 @@ public class SpotifyUtil {
 		images.add(createTestImage());
 		testPlaylist.setImages(images);
 		testPlaylist.setId(Constants.TEST_PLAYLIST_ID);
+		testPlaylist.setTracksUrl(this.mockServerUrl + Constants.TRACKS_URL);
 		return testPlaylist;
 	}
 
