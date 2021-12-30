@@ -1,16 +1,13 @@
 package com.psb.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.psb.client.SpotifyClient;
 import com.psb.exception.SpotifyClientException;
 import com.psb.exception.SpotifyClientUnauthorizedException;
-import com.psb.model.PlaylistsPreview;
+import com.psb.model.SpotifyPlaylist;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/spotify")
@@ -25,8 +22,8 @@ public class SpotifyController {
 	}
 
 	@GetMapping(path = "/playlists/preview")
-	public PlaylistsPreview getPlaylistsInfo(@RequestHeader String oauthToken)
+	public List<SpotifyPlaylist> getPlaylistsInfo(@RequestHeader String oauthToken)
 			throws SpotifyClientException, SpotifyClientUnauthorizedException {
-		return spotifyClient.getPlaylistsPreview(oauthToken);
+		return spotifyClient.getPlaylistsPreview(oauthToken).getPlaylists();
 	}
 }
