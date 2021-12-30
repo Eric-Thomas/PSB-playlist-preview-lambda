@@ -18,3 +18,4 @@ credentials
 /logs
 .aws-sam
 samconfig.toml
+.idea
